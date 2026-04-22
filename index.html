@@ -2,9 +2,58 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Binary Master</title>
     <style>
+/* تحسين الحاوية الرئيسية */
+.game-container {
+    max-width: 450px;
+    width: 95%;
+    margin: 0 auto;
+    min-height: 90vh; /* يضمن عدم تشتت العناصر في الشاشات الطويلة */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* تجميع العناصر في الوسط */
+    gap: 20px;
+}
+
+/* تحسين الشعار ليكون بحجم مناسب */
+.logo-container img {
+    width: 70%; /* حجم أكبر قليلاً */
+    max-width: 250px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+/* حل مشكلة صفوف البت (BITS) */
+#bitsGrid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr); /* إجبار الـ 8 خانات على البقاء في صف واحد */
+    gap: 5px; /* تقليل المسافة لتناسب عرض الشاشة */
+    direction: ltr; /* لضمان ترتيب 128 في اليسار و 1 في اليمين */
+    width: 100%;
+    margin: 20px 0;
+}
+
+/* تصغير الأزرار قليلاً لتناسب الشاشات الصغيرة */
+.bit-btn {
+    width: 40px; 
+    height: 40px;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
+/* تحسين لوحة الإدخال والخيارات */
+.input-group {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+
+
         :root { 
             --neon: #00ff41; 
             --bg: #0d0208; 
@@ -35,7 +84,6 @@
         .active-screen { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* شاشة البداية: الشعار بحجم عملاق ومرتفع */
         #homeScreen {
             background-image: url('logo.png');
             background-size: 110vh auto; 
@@ -146,7 +194,7 @@
             <div class="sidebar">
                 <div id="inputPanel" style="width:100%">
                     <h2 style="margin-bottom:20px; color:#fff;">دخول النظام</h2>
-                    <input type="text" id="playerName" class="big-input" placeholder="اسم المبرمجة..." maxlength="12">
+                    <input type="text" id="playerName" class="big-input" placeholder="اسم المبرمجة..." maxlength="12" onkeydown="if(event.key === 'Enter') confirmAndStart()">
                     <button class="btn-action" style="width:100%; margin-top:15px;" onclick="confirmAndStart()">تأكيد الهوية</button>
                 </div>
                 <div id="progPanel" style="display:none">
@@ -183,11 +231,10 @@
     </div>
 
 <script>
-    /* المنطق البرمجي */
     let currentPlayer = "", currentScore = 0, target = 0, roundsCount = 0;
-    let timeLeft = 100, timerInterval = null, usedNumbers = new Set();
+    let timeLeft = 0, timerInterval = null, usedNumbers = new Set();
     let bits = [0,0,0,0,0,0,0,0];
-    const bitValues = [128, 64, 32, 16, 8, 4, 2, 1];
+       const bitValues = [1, 2, 4, 8, 16, 32, 64, 128];
     let hallOfFame = [], isSessionActive = false;
 
     window.onload = () => renderBits(true);
@@ -222,12 +269,26 @@
         document.getElementById('targetNum').innerText = target;
         bits = [0,0,0,0,0,0,0,0];
         renderBits(false);
-        timeLeft = 100;
+        
+        let roundLimit;
+        if (roundsCount === 0) roundLimit = 20;
+        else if (roundsCount === 1) roundLimit = 15;
+        else if (roundsCount === 2) roundLimit = 10;
+        else roundLimit = 5; 
+
+        timeLeft = roundLimit;
         if(timerInterval) clearInterval(timerInterval);
+        
         timerInterval = setInterval(() => {
-            timeLeft -= 0.9;
-            document.getElementById('timer-fill').style.width = timeLeft + "%";
-            if(timeLeft <= 0) { clearInterval(timerInterval); saveResult(); resetForNextPlayer(); }
+            timeLeft -= 0.1; 
+            let percentage = (timeLeft / roundLimit) * 100;
+            document.getElementById('timer-fill').style.width = percentage + "%";
+            
+            if(timeLeft <= 0) {
+                clearInterval(timerInterval);
+                saveResult();
+                resetForNextPlayer();
+            }
         }, 100);
     }
 
@@ -248,7 +309,8 @@
         renderBits(false);
         if(bits.reduce((a, b, idx) => a + (b * bitValues[idx]), 0) === target) {
             clearInterval(timerInterval);
-            currentScore += 10; roundsCount++;
+            currentScore += 10;
+            roundsCount++;
             document.getElementById('displayProgScore').innerText = currentScore;
             setTimeout(startRound, 400);
         }
@@ -266,6 +328,7 @@
         document.getElementById('progPanel').style.display = 'none';
         document.getElementById('inputPanel').style.display = 'block';
         document.getElementById('targetNum').innerText = "--";
+        document.getElementById('timer-fill').style.width = "0%";
         renderBits(true);
     }
 
