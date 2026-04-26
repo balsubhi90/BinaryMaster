@@ -258,8 +258,8 @@
     function startRound() {
         let min = 1, max = 15;
         if (roundsCount < 2) { min = 1; max = 15; } 
-        else if (roundsCount < 6) { min = 16; max = 40; } 
-        else if (roundsCount < 12) { min = 41; max = 90; } 
+        else if (roundsCount < 4) { min = 16; max = 40; } 
+        else if (roundsCount < 7) { min = 41; max = 90; } 
         else { min = 91; max = 255; }
 
         do { target = Math.floor(Math.random() * (max - min + 1)) + min; } 
