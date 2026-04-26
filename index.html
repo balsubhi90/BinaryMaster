@@ -258,8 +258,8 @@
     function startRound() {
         let min = 1, max = 15;
         if (roundsCount < 2) { min = 1; max = 15; } 
-        else if (roundsCount < 4) { min = 16; max = 40; } 
-        else if (roundsCount < 7) { min = 41; max = 90; } 
+        else if (roundsCount < 5) { min = 16; max = 40; } 
+        else if (roundsCount < 8) { min = 41; max = 90; } 
         else { min = 91; max = 255; }
 
         do { target = Math.floor(Math.random() * (max - min + 1)) + min; } 
@@ -274,7 +274,7 @@
         if (roundsCount === 0) roundLimit = 20;
         else if (roundsCount === 1) roundLimit = 15;
         else if (roundsCount === 2) roundLimit = 10;
-        else roundLimit = 5; 
+        else roundLimit = 7; 
 
         timeLeft = roundLimit;
         if(timerInterval) clearInterval(timerInterval);
