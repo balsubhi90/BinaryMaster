@@ -273,8 +273,10 @@
         let roundLimit;
         if (roundsCount === 0) roundLimit = 20;
         else if (roundsCount === 1) roundLimit = 15;
-        else if (roundsCount === 2) roundLimit = 10;
-        else roundLimit = 7; 
+        else if (roundsCount === 2) roundLimit = 12.5;
+        else if (roundsCount === 3) roundLimit = 10;
+        else if (roundsCount === 4) roundLimit = 8.5;
+        else roundLimit = 6; 
 
         timeLeft = roundLimit;
         if(timerInterval) clearInterval(timerInterval);
